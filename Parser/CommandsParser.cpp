@@ -17,15 +17,14 @@ Command parser(std::string str) //TODO добавить проверку на о
         elems.push_back(item);
     }
     cmd.commandName = elems[0];
-    cmd.orderId = std::stoull(elems[1]);
-    cmd.symbol = elems[2];
-    if (elems[3] == "buy")
-        cmd.side = OrderAction::BUY;
-    else if (elems[3] == "sell")
-        cmd.side = OrderAction::SELL;
+    cmd.order.id = std::stoull(elems[1]);
+    cmd.order.data.symbol = elems[2];
+    if (elems[3] == "Buy")
+        cmd.order.side = OrderAction::BUY;
     else
-        cmd.side = OrderAction::ERROR_ACTION;
-    cmd.quantity = std::stoull(elems[4]);
-    cmd.price = std::stod(elems[5]);
+        cmd.order.side = OrderAction::SELL;
+
+    cmd.order.data.quantity = std::stoull(elems[4]);
+    cmd.order.price = std::stod(elems[5]);
     return cmd;
 }

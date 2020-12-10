@@ -6,14 +6,8 @@
 #define ORDERBOOK_COMMANDSPARSER_H
 #include <cstdint>
 #include <string>
-#include "Storage.h"
+#include <Storage.h>
 
-struct Order;
-struct Command
-{
-    std::string commandName;
-    Order order;
-};
 
 Command parser(std::string str);
 

@@ -3,20 +3,21 @@
 //
 
 #include "Storage.h"
+#include <utility>
 
-void Storage::updateMaps(std::map<uint64_t, OrderData*> &sortedById, std::map<double, std::vector<OrderData*>> &sortedByPrice, Command &cmd)
+void Storage::updateMaps(orders_by_id_t &sortedById, orders_by_price_t &sortedByPrice, Command &cmd)
 {
     sortedById.insert(std::make_pair(cmd.order.id, &orders.back().data));
 
     std::vector<OrderData*> pOrders;
     if (!sortedByPrice.empty()) {
-        auto i = sortedByPrice.find(cmd.order.price);
+        auto i = sortedByPrice.find(std::make_pair(cmd.order.price, cmd.order.data.symbol));
         if (i != sortedByPrice.end()) {
             pOrders = i->second;
         }
     }
     pOrders.push_back(&orders.back().data);
-    sortedByPrice.insert(std::make_pair(cmd.order.price, pOrders));
+    sortedByPrice.insert_or_assign(std::make_pair(cmd.order.price, cmd.order.data.symbol), std::move(pOrders));
 }
 bool Storage::insertOrder(Command &cmd)
 {
@@ -40,45 +41,29 @@ bool Storage::insertOrder(Command &cmd)
     return true;
 }
 
-auto Storage::getBuysByPriceIterator()
+orders_by_price_t::const_iterator Storage::getBuysByPriceBegin()
 {
     return buysSortedByPrice.cbegin();
 }
 
-//    size_t getOrdersCount()
-//    {
-//        return orders.size();
-//    }
-//
-//    size_t getOrderCount(const std::string& symbol)
-//    {
-//        size_t count = 0;
-//        for (const auto& order : orders)
-//        {
-//            if (order.symbol == symbol)
-//                count++;
-//        }
-//        return count;
-//    }
-//
-//    void getOrder(const std::string& symbol, uint64_t& price, Order& order) const
-//    {
-//        while (sortedByPriceIterator != buysSortedByPrice.end())
-//        {
-//            if (sortedByPriceIterator->second.front()->symbol == symbol) {
-//                order.symbol = sortedByPriceIterator->second.front()->symbol;
-//                price = sortedByPriceIterator->first;
-//                if (sortedByPriceIterator->second.size() > 1)
-//                    for (auto i : sortedByPriceIterator->second) {
-//                        order.quantity += i->quantity;
-//                    }
-//            }
-//            std::next(sortedByPriceIterator);
-//        }
-//    }
-
-size_t print(const std::string& symbol, uint64_t& price, Order& order)
+orders_by_price_t::const_iterator Storage::getBuysByPriceEnd()
 {
-    storage.getOrder(symbol, price, order);
-    return 0;
+    return buysSortedByPrice.cend();
+}
+
+bool Storage::getDataForPrint(orders_by_price_t::const_iterator it, Order &order, size_t &ordersCount,
+                              const std::string &pattern) {
+    auto a = it->second.front()->symbol;
+    if (a == pattern) {
+        ordersCount = 1;
+        order.data.symbol = it->second.front()->symbol;
+        order.price = it->first.first;
+        if (it->second.size() > 1)
+            for (auto i : it->second) {
+                ordersCount++;
+                order.data.quantity += i->quantity;
+            }
+        return true;
+    }
+    return false;
 }

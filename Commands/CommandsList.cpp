@@ -4,47 +4,47 @@
 
 #include "CommandsList.h"
 
-bool orderAdd()
-{
-
-}
-
-bool orderModify()
-{
-
-}
-
-bool orderCancel()
-{
-
-}
-
-bool subscribeBBO()
-{
-
-}
-
-bool unsubscribeBBO()
-{
-
-}
-
-bool subscribeVWAP()
-{
-
-}
-
-bool unsubscribeVWAP()
-{
-
-}
-
-bool print()
-{
-
-}
-
-bool printFull()
-{
-
-}
+//bool orderAdd()
+//{
+//
+//}
+//
+//bool orderModify()
+//{
+//
+//}
+//
+//bool orderCancel()
+//{
+//
+//}
+//
+//bool subscribeBBO()
+//{
+//
+//}
+//
+//bool unsubscribeBBO()
+//{
+//
+//}
+//
+//bool subscribeVWAP()
+//{
+//
+//}
+//
+//bool unsubscribeVWAP()
+//{
+//
+//}
+//
+//bool print()
+//{
+//
+//}
+//
+//bool printFull()
+//{
+//
+//}
