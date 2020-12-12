@@ -9,6 +9,8 @@
 #include <PrintFull.h>
 #include "vector"
 #include "sstream"
+#include <SubscribesView.h>
+#include <Subscribes.h>
 
 void getInputArgs(const std::string& str, std::vector<std::string>& args)
 {
@@ -26,6 +28,8 @@ namespace view {
             std::cout << "Enter: " << std::endl;
             std::cout << "'Print 'symbol'' to execute Print command " << std::endl;
             std::cout << "'Print Full' to execute Print Full command " << std::endl;
+            std::cout << "'Subscribe BBO 'symbol' to execute Subscribe BBO" << std::endl;
+            std::cout << "'Unsubscribe BBO 'symbol' to execute Unsubscribe BBO" << std::endl;
             std::cout << "'Exit' to close application" << std::endl;
 
             std::string s;
@@ -43,10 +47,24 @@ namespace view {
                 else
                     std::cout << "Erroneous input" << std::endl;
             }
+            else if (args.size() > 1 && args[0] == "Subscribe" && args[1] == "BBO") {
+                if (args.size() == 3)
+                    commands::bboSubscribe(args[2]);
+                else
+                    std::cout << "Erroneous input" << std::endl;
+            }
+            else if (args.size() > 1 && args[0] == "Unsubscribe" && args[1] == "BBO") {
+                if (args.size() == 3)
+                    commands::bboUnsubscribe(args[2]);
+                else
+                    std::cout << "Erroneous input" << std::endl;
+            }
             else if (args[0] == "Exit")
                 return;
             else
                 std::cout << "Erroneous input" << std::endl;
+
+            view::printSubscribes();
         }
     }
 }

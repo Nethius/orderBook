@@ -87,3 +87,20 @@ bool Storage::getDataForPrintFull(const order_with_key_t& order, Order& data, si
         }
     return false;
 }
+
+void Storage::getBboForPrint(std::string symbol, double& bid, double& ask)
+{ //TODO вынести
+    auto buyIter = buysSortedByPrice.crbegin();
+    while (buyIter != buysSortedByPrice.crend()) {
+        if (buyIter->first.second == symbol)
+            bid = buyIter->second.front()->price;
+        buyIter = std::next(buyIter);
+    }
+
+    auto sellIter = sellsSortedByPrice.cbegin();
+    while (sellIter != sellsSortedByPrice.cend()) {
+        if (sellIter->first.second == symbol)
+            ask = sellIter->second.front()->price;
+        sellIter = std::next(sellIter);
+    }
+}

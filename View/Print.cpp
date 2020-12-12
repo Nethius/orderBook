@@ -64,7 +64,7 @@ namespace view {
                 storage.getDataForPrint(order_with_key_t{buysIter->first, buysIter->second}, buyData, buyVolume,
                                         symbol);
                 buysIter = std::next(buysIter);
-            }
+            } //TODO пропуски если другой символ найден
             buys.push_back(PrintData{buyVolume, buyData});
 
             size_t sellVolume = 0;

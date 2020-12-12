@@ -85,7 +85,7 @@ public:
     void getDataForPrint(const order_with_key_t& order, Order& data, size_t& dataVolume, const std::string& pattern);
     bool getDataForPrintFull(const order_with_key_t& order, Order& data, size_t& ordersLeft);
     bool insertOrder(Command &cmd);
-
+    void getBboForPrint(std::string symbol, double& bid, double& ask);
 };
 
 #endif //ORDERBOOK_STORAGE_H
