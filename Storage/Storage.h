@@ -10,6 +10,7 @@
 #include "map"
 #include "list"
 #include <iostream>
+#include <algorithm>
 
 struct OrderData {
     uint64_t quantity;
@@ -44,8 +45,9 @@ struct comparator
     }
 };
 
-typedef std::map<uint64_t, OrderData *> orders_by_id_t;
-typedef std::map<std::pair<double, std::string>, std::vector<OrderData *>, comparator> orders_by_price_t ;
+typedef std::map<uint64_t, Order *> orders_by_id_t;
+typedef std::pair<std::pair<double, std::string>, std::vector<Order *>> order_with_key_t;
+typedef std::map<std::pair<double, std::string>, std::vector<Order *>, comparator> orders_by_price_t ;
 
 
 
@@ -62,12 +64,26 @@ class Storage {
     updateMaps(orders_by_id_t &sortedById, orders_by_price_t &sortedByPrice,
                Command &cmd);
 
+    Storage() {};
+    ~Storage() {};
+    Storage(Storage const&) = delete;
+    Storage& operator= (Storage const&) = delete;
 public:
 
-    orders_by_price_t::const_iterator getBuysByPriceBegin();
-    orders_by_price_t::const_iterator getBuysByPriceEnd();
+    orders_by_price_t::const_reverse_iterator getBuysByPriceBegin();
+    orders_by_price_t::const_reverse_iterator getBuysByPriceEnd();
 
-    bool getDataForPrint(orders_by_price_t::const_iterator it, Order& order, size_t& ordersCount, const std::string& pattern);
+    orders_by_price_t::const_iterator getSellsByPriceBegin();
+    orders_by_price_t::const_iterator getSellsByPriceEnd();
+
+    static Storage& instance()
+    {
+        static Storage storage;
+        return storage;
+    };
+
+    void getDataForPrint(const order_with_key_t& order, Order& data, size_t& dataVolume, const std::string& pattern);
+    bool getDataForPrintFull(const order_with_key_t& order, Order& data, size_t& ordersLeft);
     bool insertOrder(Command &cmd);
 
 };

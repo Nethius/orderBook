@@ -7,16 +7,16 @@
 
 void Storage::updateMaps(orders_by_id_t &sortedById, orders_by_price_t &sortedByPrice, Command &cmd)
 {
-    sortedById.insert(std::make_pair(cmd.order.id, &orders.back().data));
+    sortedById.insert(std::make_pair(cmd.order.id, &orders.back()));
 
-    std::vector<OrderData*> pOrders;
+    std::vector<Order*> pOrders;
     if (!sortedByPrice.empty()) {
         auto i = sortedByPrice.find(std::make_pair(cmd.order.price, cmd.order.data.symbol));
         if (i != sortedByPrice.end()) {
             pOrders = i->second;
         }
     }
-    pOrders.push_back(&orders.back().data);
+    pOrders.push_back(&orders.back());
     sortedByPrice.insert_or_assign(std::make_pair(cmd.order.price, cmd.order.data.symbol), std::move(pOrders));
 }
 bool Storage::insertOrder(Command &cmd)
@@ -41,29 +41,49 @@ bool Storage::insertOrder(Command &cmd)
     return true;
 }
 
-orders_by_price_t::const_iterator Storage::getBuysByPriceBegin()
+orders_by_price_t::const_reverse_iterator Storage::getBuysByPriceBegin()
 {
-    return buysSortedByPrice.cbegin();
+    return buysSortedByPrice.crbegin();
 }
 
-orders_by_price_t::const_iterator Storage::getBuysByPriceEnd()
+orders_by_price_t::const_reverse_iterator Storage::getBuysByPriceEnd()
 {
-    return buysSortedByPrice.cend();
+    return buysSortedByPrice.crend();
 }
 
-bool Storage::getDataForPrint(orders_by_price_t::const_iterator it, Order &order, size_t &ordersCount,
-                              const std::string &pattern) {
-    auto a = it->second.front()->symbol;
-    if (a == pattern) {
-        ordersCount = 1;
-        order.data.symbol = it->second.front()->symbol;
-        order.price = it->first.first;
-        if (it->second.size() > 1)
-            for (auto i : it->second) {
-                ordersCount++;
-                order.data.quantity += i->quantity;
+orders_by_price_t::const_iterator Storage::getSellsByPriceBegin()
+{
+    return sellsSortedByPrice.cbegin();
+}
+
+orders_by_price_t::const_iterator Storage::getSellsByPriceEnd()
+{
+    return sellsSortedByPrice.cend();
+}
+
+void Storage::getDataForPrint(const order_with_key_t& order, Order& data, size_t& dataVolume, const std::string& pattern) {
+    if (order.second.front()->data.symbol == pattern) {
+        data.data.symbol = order.second.front()->data.symbol;
+        data.price = order.first.first;
+        if (order.second.size() > 1) {
+            for (auto i : order.second) {
+                dataVolume++;
+                data.data.quantity += i->data.quantity;
             }
-        return true;
+        } else {
+            dataVolume = 1;
+            data.data.quantity = order.second.front()->data.quantity;
+        }
     }
+}
+
+bool Storage::getDataForPrintFull(const order_with_key_t& order, Order& data, size_t& ordersLeft) {
+        if (ordersLeft < order.second.size()) {
+            data.data.symbol = order.second[ordersLeft]->data.symbol;
+            data.data.quantity = order.second[ordersLeft]->data.quantity;
+            data.price = order.second[ordersLeft]->price;
+            data.id = order.second[ordersLeft]->id;
+            return true;
+        }
     return false;
 }
