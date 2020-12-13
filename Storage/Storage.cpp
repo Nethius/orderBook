@@ -60,6 +60,31 @@ bool Storage::modifyOrder(Order &order)
     return true;
 }
 
+bool Storage::cancelOrder(uint64_t orderId)
+{
+    auto cancel{
+            [&orderId, this](orders_by_id_t &ordersById,
+                     orders_by_price_t &ordersByPrice) {
+                auto itById = ordersById.find(orderId);
+                if (itById == ordersById.cend())
+                    return false;
+
+                auto itByPrice = ordersByPrice.find(std::make_pair(itById->second->price, itById->second->data.symbol));
+                ordersByPrice.erase(itByPrice);
+                ordersById.erase(itById);
+                auto it = std::find_if( orders.begin(),
+                                        orders.end(),
+                                        [orderId]( const Order& order ){ return order.id == orderId; } );
+                orders.erase(it);
+                return true;
+            }
+    };
+
+    if (!cancel(buysSortedById, buysSortedByPrice) && !cancel(sellsSortedById, sellsSortedByPrice))
+        return false;
+    return true;
+}
+
 orders_by_price_t::const_reverse_iterator Storage::getBuysByPriceBegin() {
     return buysSortedByPrice.crbegin();
 }

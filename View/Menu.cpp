@@ -34,6 +34,7 @@ namespace view {
             std::cout << "'Subscribe VWAP 'symbol' 'quantity' to execute Subscribe BBO command" << std::endl;
             std::cout << "'Unsubscribe VWAP 'symbol' 'quantity' to execute Unsubscribe BBO command" << std::endl;
             std::cout << "'Order Modify 'id' 'quantity' 'price' to execute Order Modify command" << std::endl;
+            std::cout << "'Order Cancel 'id' to execute Order Modify command" << std::endl;
             std::cout << "'Exit' to close application" << std::endl;
 
             std::string s;
@@ -66,22 +67,30 @@ namespace view {
                     std::cout << "Erroneous input" << std::endl;
             }
             else if (args.size() > 1 && args[0] == "Subscribe" && args[1] == "VWAP") { //Subscribe VWAP
-                if (args.size() == 4)
-                    if(!commands::vwapSubscribe(args[2], std::stoull(args[3])))
+                if (args.size() == 4) {
+                    if (!commands::vwapSubscribe(args[2], std::stoull(args[3])))
                         std::cout << "Already subscribed" << std::endl;
                     else
                         std::cout << "Erroneous input" << std::endl;
+                }
             }
             else if (args.size() > 1 && args[0] == "Unsubscribe" && args[1] == "VWAP") { //Unsubscribe VWAP
-                if (args.size() == 4)
-                    if(!commands::vwapUnsubscribe(args[2], std::stoull(args[3])))
+                if (args.size() == 4) {
+                    if (!commands::vwapUnsubscribe(args[2], std::stoull(args[3])))
                         std::cout << "Not subscribed" << std::endl;
                     else
                         std::cout << "Erroneous input" << std::endl;
+                }
             }
-            else if (args.size() > 1 && args[0] == "Order" && args[1] == "Modify") { //Unsubscribe VWAP
+            else if (args.size() > 1 && args[0] == "Order" && args[1] == "Modify") { //Order Modify
                 if (args.size() == 5)
                     if(!commands::orderModify(Command{"ORDER MODIFY", std::stoull(args[2]), std::stod(args[3]), std::stoull(args[4]), "",
+                                                      OrderAction::BUY}))
+                        std::cout << "Erroneous input" << std::endl;
+            }
+            else if (args.size() > 1 && args[0] == "Order" && args[1] == "Cancel") { //Order Cancel
+                if (args.size() == 3)
+                    if(!commands::orderCancel(Command{"ORDER CANCEL", std::stoull(args[2]), 0, 0, "",
                                                       OrderAction::BUY}))
                         std::cout << "Erroneous input" << std::endl;
             }

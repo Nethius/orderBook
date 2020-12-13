@@ -35,19 +35,19 @@ struct Command
     Order order;
 };
 
-struct comparator
-{
-    bool operator()(const std::pair<double, std::string> &l, const std::pair<double, std::string> &r) const
-    {
-        if (std::abs(l.first - r.first) <= EPSILON * std::max(1.0, std::max(std::abs(l.first), std::abs(r.first))))
+namespace {
+    struct comparator {
+        bool operator()(const std::pair<double, std::string> &l, const std::pair<double, std::string> &r) const {
+            if (std::abs(l.first - r.first) <= EPSILON * std::max(1.0, std::max(std::abs(l.first), std::abs(r.first))))
                 return l.second > r.second;
-        return l.first < r.first;
-    }
-};
+            return l.first < r.first;
+        }
+    };
 
-typedef std::map<uint64_t, Order *> orders_by_id_t;
-typedef std::pair<std::pair<double, std::string>, std::vector<Order *>> order_with_key_t;
-typedef std::map<std::pair<double, std::string>, std::vector<Order *>, comparator> orders_by_price_t ;
+    typedef std::map<uint64_t, Order *> orders_by_id_t;
+    typedef std::pair<std::pair<double, std::string>, std::vector<Order *>> order_with_key_t;
+    typedef std::map<std::pair<double, std::string>, std::vector<Order *>, comparator> orders_by_price_t;
+}
 
 class Storage {
     std::list<Order> orders;
@@ -84,7 +84,7 @@ public:
     bool getDataForPrintFull(const order_with_key_t& order, Order& data, size_t& idInVector);
     bool insertOrder(Order &order);
     bool modifyOrder(Order &order);
-//    bool cancelOrder(uint64_t orderId);
+    bool cancelOrder(uint64_t orderId);
 
     void getBboForSubscribe(const std::string& symbol, double& bid, double& ask);
     void getVwapForSubscribe(const std::string &symbol, const uint64_t& quantity, double &bid, double &ask);

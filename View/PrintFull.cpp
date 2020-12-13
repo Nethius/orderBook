@@ -58,7 +58,6 @@ namespace view {
         while (true) {
 
             Order buyData = {};
-        //TODO вынести в отдельную функцию
             if (buysIter != storage.getBuysByPriceEnd()) {
                 if (buys.size() < MAX_PRINT_ON_SCREEN) {
                     if (storage.getDataForPrintFull(order_with_key_t{buysIter->first, buysIter->second}, buyData,
@@ -73,7 +72,6 @@ namespace view {
             }
 
             Order sellData = {};
-
             if (sellsIter != storage.getSellsByPriceEnd()) {
                 if (sells.size() < MAX_PRINT_ON_SCREEN) {
                     if (storage.getDataForPrintFull(order_with_key_t{sellsIter->first, sellsIter->second}, sellData,
