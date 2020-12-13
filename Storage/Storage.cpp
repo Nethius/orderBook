@@ -4,6 +4,12 @@
 
 #include "Storage.h"
 #include <utility>
+#include "string"
+#include "vector"
+#include "map"
+#include "list"
+#include <iostream>
+#include <algorithm>
 
 void Storage::updateMapById(orders_by_price_t &ordersByPrice, Order &order) {
     std::vector<Order *> pOrders;
