@@ -1,9 +1,9 @@
 CC=g++
-CFLAGS=-g -std=c++17 -Wall -pedantic
-SOURCES=Storage/Storage.h Storage/Storage.cpp Parser/CommandsParser.h Parser/CommandsParser.cpp Commands/ModifyOrder.h Commands/ModifyOrder.cpp Commands/MdReplay.h Commands/MdReplay.cpp Commands/Subscribes.h Commands/Subscribes.cpp View/Print.h View/Print.cpp View/PrintFull.h View/PrintFull.cpp View/SubscribesView.h View/SubscribesView.cpp View/Menu.h View/Menu.cpp
+CFLAGS=-c -std=c++17 -Wall -pedantic
+SOURCES=Storage/Storage.cpp Parser/CommandsParser.cpp Commands/ModifyOrder.cpp Commands/MdReplay.cpp Commands/Subscribes.cpp View/Print.cpp View/PrintFull.cpp View/SubscribesView.cpp View/Menu.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=orderBook
-
+HEADERS=Storage/Storage.h Parser/CommandsParser.h Commands/ModifyOrder.h Commands/MdReplay.h Commands/Subscribes.h View/Print.h View/PrintFull.h View/SubscribesView.h View/Menu.h
 all: $(SOURCES) $(EXECUTABLE)
 	
 $(EXECUTABLE): $(OBJECTS) 
@@ -11,3 +11,6 @@ $(EXECUTABLE): $(OBJECTS)
 
 .cpp.o:
 	$(CC) $< -o $@
+
+clean:
+	rm -rf *.o orderBook
