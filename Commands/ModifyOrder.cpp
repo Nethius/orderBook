@@ -5,7 +5,7 @@
 #include "ModifyOrder.h"
 
 namespace commands {
-    bool orderAdd(Command cmd)
+    bool orderAdd(Command&& cmd)
     {
         if (cmd.commandName != "ORDER ADD") {
             std::cout << "Wrong command signature: " << cmd.commandName << std::endl;
@@ -15,7 +15,7 @@ namespace commands {
         return storage.insertOrder(cmd.order);
     }
 
-    bool orderModify(Command cmd){
+    bool orderModify(Command&& cmd){
         if (cmd.commandName != "ORDER MODIFY")
         {
             std::cout << "Wrong command signature: " << cmd.commandName << std::endl;
@@ -25,7 +25,7 @@ namespace commands {
         return storage.modifyOrder(cmd.order);
     }
 
-    bool orderCancel(Command cmd){
+    bool orderCancel(Command&& cmd){
         if (cmd.commandName != "ORDER CANCEL")
         {
             std::cout << "Wrong command signature: " << cmd.commandName << std::endl;

@@ -5,7 +5,6 @@
 #include <Print.h>
 #include <iomanip>
 #include <algorithm>
-#include <Storage.h>
 
 namespace {
     struct PrintData {
@@ -43,7 +42,11 @@ namespace {
     }
 }
 namespace view {
-    void print(const std::string &symbol) {
+    void print(Command&& cmd) {
+        if (cmd.commandName != "PRINT") {
+            std::cout << "Wrong command signature: " << cmd.commandName << std::endl;
+            return;
+        }
 
         Storage &storage = Storage::instance();
 
@@ -61,20 +64,25 @@ namespace view {
             Order buyData = {};
 
             if (buysIter != storage.getBuysByPriceEnd()) {
-                if (storage.getDataForPrint(order_with_key_t{buysIter->first, buysIter->second}, buyData, buyVolume,
-                                            symbol))
-                    buys.push_back(PrintData{buyVolume, buyData});
-                buysIter = std::next(buysIter);
+                if (buys.size() < MAX_PRINT_ON_SCREEN) {
+                    if (storage.getDataForPrint(order_with_key_t{buysIter->first, buysIter->second}, buyData, buyVolume,
+                                                cmd.order.data.symbol))
+                        buys.push_back(PrintData{buyVolume, buyData});
+                    buysIter = std::next(buysIter);
+                }
             }
 
             size_t sellVolume = 0;
             Order sellData = {};
 
             if (sellsIter != storage.getSellsByPriceEnd()) {
-                if (storage.getDataForPrint(order_with_key_t{sellsIter->first, sellsIter->second}, sellData, sellVolume,
-                                            symbol))
-                    sells.push_back(PrintData{sellVolume, sellData});
-                sellsIter = std::next(sellsIter);
+                if (sells.size() < MAX_PRINT_ON_SCREEN) {
+                    if (storage.getDataForPrint(order_with_key_t{sellsIter->first, sellsIter->second}, sellData,
+                                                sellVolume,
+                                                cmd.order.data.symbol))
+                        sells.push_back(PrintData{sellVolume, sellData});
+                    sellsIter = std::next(sellsIter);
+                }
             }
 
             shouldPrint = (buys.size() == MAX_PRINT_ON_SCREEN && sells.size() == MAX_PRINT_ON_SCREEN) || (

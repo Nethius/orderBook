@@ -6,8 +6,9 @@
 #define ORDERBOOK_PRINT_H
 
 #include <string>
+#include <Storage.h>
 
 namespace view {
-    void print(const std::string &symbol);
+    void print(Command&& cmd);
 }
 #endif //ORDERBOOK_PRINT_H

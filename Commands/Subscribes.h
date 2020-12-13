@@ -6,15 +6,16 @@
 #define ORDERBOOK_SUBSCRIBES_H
 #include <string>
 #include <vector>
+#include <Storage.h>
 
 namespace commands {
-    bool bboSubscribe(const std::string& symbol);
-    bool bboUnsubscribe(const std::string& symbol);
+    bool bboSubscribe(Command&& cmd);
+    bool bboUnsubscribe(Command&& cmd);
     std::vector<std::string>::const_iterator getBboIterBegin();
     std::vector<std::string>::const_iterator getBboIterEnd();
 
-    bool vwapSubscribe(const std::string& symbol, uint64_t quantity);
-    bool vwapUnsubscribe(const std::string& symbol, uint64_t quantity);
+    bool vwapSubscribe(Command&& cmd);
+    bool vwapUnsubscribe(Command&& cmd);
     std::vector<std::pair<std::string, uint64_t>>::const_iterator getVwapIterBegin();
     std::vector<std::pair<std::string, uint64_t>>::const_iterator getVwapIterEnd();
 }

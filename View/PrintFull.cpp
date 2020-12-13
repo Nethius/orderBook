@@ -5,7 +5,6 @@
 #include "PrintFull.h"
 #include <iomanip>
 #include <algorithm>
-#include <Storage.h>
 
 namespace {
     const size_t MAX_PRINT_ON_SCREEN = 5;
@@ -41,7 +40,12 @@ namespace {
 }
 
 namespace view {
-    void printFull() {
+    bool printFull(Command&& cmd) {
+        if (cmd.commandName != "PRINT FULL") {
+            std::cout << "Wrong command signature: " << cmd.commandName << std::endl;
+            return false;
+        }
+
         Storage &storage = Storage::instance();
 
         std::vector<Order> buys;
@@ -106,7 +110,7 @@ namespace view {
                     std::getline(std::cin, s);
                     switch (std::stoi(s)) {
                         case 0:
-                            return;
+                            return true;
                         case 1: {
                             shouldPrint = false;
                             //TODO clear screen

@@ -15,11 +15,11 @@ int main() {
     std::string str;
     std::vector<Command> commands;
     while(std::getline(f, str))
-        commands.push_back(parser(str));
+        commands.push_back(commandParser::parser(str));
 
     for (auto command : commands)
     {
-        commands::orderAdd(command);
+        commands::orderAdd(std::move(command));
     }
 
     view::menu();

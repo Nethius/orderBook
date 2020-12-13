@@ -8,8 +8,9 @@
 #include <string>
 #include <Storage.h>
 
-
-Command parser(std::string str);
+namespace commandParser {
+    Command parser(const std::string& str);
+}
 
 
 

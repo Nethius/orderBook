@@ -4,9 +4,10 @@
 
 #ifndef ORDERBOOK_PRINTFULL_H
 #define ORDERBOOK_PRINTFULL_H
+#include <Storage.h>
 
 namespace view {
-    void printFull();
+    bool printFull(Command&& cmd);
 }
 
 #endif //ORDERBOOK_PRINTFULL_H
