@@ -18,17 +18,17 @@ namespace {
 
     void formatPrint(std::vector<PrintData> &buys, std::vector<PrintData> &sells) {
         for (size_t i = 0; i < std::max(buys.size(), sells.size()); i++) {
-            std::cout << std::setw(PADDING) << std::left << ((buys[i].count == 0) ? "" : std::to_string(buys[i].count));
+            std::cout << std::setw(PADDING) << std::left << ((i < buys.size()) ? std::to_string(buys[i].count) : "");
             std::cout << std::setw(PADDING) << std::left
-                      << ((buys[i].count == 0) ? "" : std::to_string(buys[i].order.data.quantity));
+                      << ((i < buys.size()) ? std::to_string(buys[i].order.data.quantity) : "");
             std::cout << std::setw(PADDING) << std::left
-                      << ((buys[i].count == 0) ? "" : std::to_string(buys[i].order.price));
+                      << ((i < buys.size()) ? std::to_string(buys[i].order.price) : "");
             std::cout << std::setw(PADDING) << std::left
-                      << ((sells[i].count == 0) ? "" : std::to_string(sells[i].count));
+                      << ((i < sells.size()) ? std::to_string(sells[i].count) : "");
             std::cout << std::setw(PADDING) << std::left
-                      << ((sells[i].count == 0) ? "" : std::to_string(sells[i].order.data.quantity));
+                      << ((i < sells.size()) ? std::to_string(sells[i].order.data.quantity) : "");
             std::cout << std::setw(PADDING) << std::left
-                      << ((sells[i].count == 0) ? "" : std::to_string(sells[i].order.price)) << std::endl;
+                      << ((i < sells.size()) ? std::to_string(sells[i].order.price) : "") << std::endl;
         }
     }
 
@@ -54,39 +54,41 @@ namespace view {
 
         printHeader();
 
-        size_t records = 0;
+        bool shouldPrint = false;
 
         while (true) {
             size_t buyVolume = 0;
             Order buyData = {};
 
             if (buysIter != storage.getBuysByPriceEnd()) {
-                storage.getDataForPrint(order_with_key_t{buysIter->first, buysIter->second}, buyData, buyVolume,
-                                        symbol);
+                if (storage.getDataForPrint(order_with_key_t{buysIter->first, buysIter->second}, buyData, buyVolume,
+                                            symbol))
+                    buys.push_back(PrintData{buyVolume, buyData});
                 buysIter = std::next(buysIter);
-            } //TODO пропуски если другой символ найден
-            buys.push_back(PrintData{buyVolume, buyData});
+            }
 
             size_t sellVolume = 0;
             Order sellData = {};
 
             if (sellsIter != storage.getSellsByPriceEnd()) {
-                storage.getDataForPrint(order_with_key_t{sellsIter->first, sellsIter->second}, sellData, sellVolume,
-                                        symbol);
+                if (storage.getDataForPrint(order_with_key_t{sellsIter->first, sellsIter->second}, sellData, sellVolume,
+                                            symbol))
+                    sells.push_back(PrintData{sellVolume, sellData});
                 sellsIter = std::next(sellsIter);
             }
-            sells.push_back(PrintData{sellVolume, sellData});
 
-            records++;
-            if (records == MAX_PRINT_ON_SCREEN || (buysIter == storage.getBuysByPriceEnd() &&
-                                                   sellsIter == storage.getSellsByPriceEnd())) {
+            shouldPrint = (buys.size() == MAX_PRINT_ON_SCREEN && sells.size() == MAX_PRINT_ON_SCREEN) || (
+                    buysIter == storage.getBuysByPriceEnd() &&
+                    sellsIter == storage.getSellsByPriceEnd());
+
+            if (shouldPrint) {
                 formatPrint(buys, sells);
                 buys.clear();
                 sells.clear();
             }
 
-            if (records == MAX_PRINT_ON_SCREEN) {
-                while (records) {
+            if (shouldPrint) {
+                while (shouldPrint) {
                     std::cout << "Print ";
                     if (buysIter != storage.getBuysByPriceEnd() ||
                         sellsIter != storage.getSellsByPriceEnd())
@@ -101,7 +103,7 @@ namespace view {
                         case 1: {
                             if (buysIter != storage.getBuysByPriceEnd() ||
                                 sellsIter != storage.getSellsByPriceEnd()) {
-                                records = 0;
+                                shouldPrint = false;
                                 //TODO clear screen
                                 printHeader();
                                 break;

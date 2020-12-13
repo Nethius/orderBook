@@ -58,9 +58,7 @@ class Storage {
     orders_by_id_t sellsSortedById;
     orders_by_price_t sellsSortedByPrice;
 
-    void
-    updateMaps(orders_by_id_t &sortedById, orders_by_price_t &sortedByPrice,
-               Order &order);
+    void updateMapById(orders_by_price_t &ordersByPrice, Order& order);
 
     Storage() {};
     ~Storage() {};
@@ -80,7 +78,7 @@ public:
         return storage;
     };
 
-    void getDataForPrint(const order_with_key_t& order, Order& data, size_t& dataVolume, const std::string& pattern);
+    bool getDataForPrint(const order_with_key_t& order, Order& data, size_t& dataVolume, const std::string& pattern);
     bool getDataForPrintFull(const order_with_key_t& order, Order& data, size_t& idInVector);
     bool insertOrder(Order &order);
     bool modifyOrder(Order &order);

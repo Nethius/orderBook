@@ -5,19 +5,17 @@
 #include "Storage.h"
 #include <utility>
 
-void Storage::updateMaps(orders_by_id_t &sortedById, orders_by_price_t &sortedByPrice, Order &order) {
-    sortedById.insert(std::make_pair(order.id, &orders.back()));
-
+void Storage::updateMapById(orders_by_price_t &ordersByPrice, Order &order) {
     std::vector<Order *> pOrders;
-    if (!sortedByPrice.empty()) {
-        auto i = sortedByPrice.find(std::make_pair(order.price, order.data.symbol));
-        if (i != sortedByPrice.end()) {
+    if (!ordersByPrice.empty()) {
+        auto i = ordersByPrice.find(std::make_pair(order.price, order.data.symbol));
+        if (i != ordersByPrice.end()) {
             pOrders = i->second;
         }
     }
     pOrders.push_back(&orders.back());
-    sortedByPrice.insert_or_assign(std::make_pair(order.price, order.data.symbol), std::move(pOrders));
-}
+    ordersByPrice.insert_or_assign(std::make_pair(order.price, order.data.symbol), std::move(pOrders));
+};
 
 bool Storage::insertOrder(Order &order) {
     if (!buysSortedById.empty() && buysSortedById.find(order.id) != buysSortedById.end() ||
@@ -27,10 +25,13 @@ bool Storage::insertOrder(Order &order) {
     }
     try {
         orders.push_back(order);
-        if (order.side == OrderAction::BUY)
-            updateMaps(buysSortedById, buysSortedByPrice, order);
-        else
-            updateMaps(sellsSortedById, sellsSortedByPrice, order);
+        if (order.side == OrderAction::BUY) {
+            buysSortedById.insert(std::make_pair(order.id, &orders.back()));
+            updateMapById(buysSortedByPrice, order);
+        } else {
+            sellsSortedById.insert(std::make_pair(order.id, &orders.back()));
+            updateMapById(sellsSortedByPrice, order);
+        }
     }
     catch (...) {
         std::cout << "error while insert new order" << std::endl;
@@ -39,19 +40,33 @@ bool Storage::insertOrder(Order &order) {
     return true;
 }
 
-bool Storage::modifyOrder(Order &order)
-{
+bool Storage::modifyOrder(Order &order) {
     auto modify{
-            [&order](orders_by_id_t &ordersById,
-                     orders_by_price_t &ordersByPrice) {
-                auto itById = ordersById.find(order.id);
+            [&order, this](orders_by_id_t &ordersById,
+                           orders_by_price_t &ordersByPrice) {
+                auto orderId = order.id;
+                auto itById = ordersById.find(orderId);
                 if (itById == ordersById.cend())
                     return false;
-                auto mapNode = ordersByPrice.extract(std::make_pair(itById->second->price, itById->second->data.symbol));
-                mapNode.key() = std::make_pair(order.price, itById->second->data.symbol);
-                ordersByPrice.insert(std::move(mapNode));
+                auto itByPrice = ordersByPrice.find(
+                        std::make_pair(itById->second->price, itById->second->data.symbol));
+
+                auto pOrderIt = std::find_if(itByPrice->second.begin(),
+                                       itByPrice->second.end(),
+                                       [orderId](const Order* order) { return order->id == orderId; });
+
                 itById->second->data.quantity = order.data.quantity;
                 itById->second->price = order.price;
+
+                if (itByPrice->second.size() > 1) {
+                    itByPrice->second.erase(pOrderIt);
+                    updateMapById(ordersByPrice, *(itById->second));
+                }
+                else {
+                    auto mapNode = ordersByPrice.extract(itByPrice);
+                    mapNode.key() = std::make_pair(order.price, itById->second->data.symbol);
+                    ordersByPrice.insert(std::move(mapNode));
+                }
                 return true;
             }
     };
@@ -60,22 +75,30 @@ bool Storage::modifyOrder(Order &order)
     return true;
 }
 
-bool Storage::cancelOrder(uint64_t orderId)
-{
+bool Storage::cancelOrder(uint64_t orderId) {
     auto cancel{
             [&orderId, this](orders_by_id_t &ordersById,
-                     orders_by_price_t &ordersByPrice) {
+                             orders_by_price_t &ordersByPrice) {
                 auto itById = ordersById.find(orderId);
                 if (itById == ordersById.cend())
                     return false;
 
-                auto itByPrice = ordersByPrice.find(std::make_pair(itById->second->price, itById->second->data.symbol));
-                ordersByPrice.erase(itByPrice);
+                auto itByPrice = ordersByPrice.find(
+                        std::make_pair(itById->second->price, itById->second->data.symbol));
+                auto pOrderIt = std::find_if(itByPrice->second.begin(),
+                                       itByPrice->second.end(),
+                                       [orderId](const Order* order) { return order->id == orderId; });
+                if (itByPrice->second.size() > 1)
+                    itByPrice->second.erase(pOrderIt);
+                else
+                    ordersByPrice.erase(itByPrice);
+
+
                 ordersById.erase(itById);
-                auto it = std::find_if( orders.begin(),
-                                        orders.end(),
-                                        [orderId]( const Order& order ){ return order.id == orderId; } );
-                orders.erase(it);
+                auto orderIt = std::find_if(orders.begin(),
+                                       orders.end(),
+                                       [orderId](const Order &order) { return order.id == orderId; });
+                orders.erase(orderIt);
                 return true;
             }
     };
@@ -101,8 +124,9 @@ orders_by_price_t::const_iterator Storage::getSellsByPriceEnd() {
     return sellsSortedByPrice.cend();
 }
 
-void
-Storage::getDataForPrint(const order_with_key_t &order, Order &data, size_t &dataVolume, const std::string &pattern) {
+bool
+Storage::getDataForPrint(const order_with_key_t &order, Order &data, size_t &dataVolume,
+                         const std::string &pattern) {
     if (order.second.front()->data.symbol == pattern) {
         data.data.symbol = order.second.front()->data.symbol;
         data.price = order.first.first;
@@ -115,7 +139,9 @@ Storage::getDataForPrint(const order_with_key_t &order, Order &data, size_t &dat
             dataVolume = 1;
             data.data.quantity = order.second.front()->data.quantity;
         }
+        return true;
     }
+    return false;
 }
 
 bool Storage::getDataForPrintFull(const order_with_key_t &order, Order &data, size_t &idInVector) {
