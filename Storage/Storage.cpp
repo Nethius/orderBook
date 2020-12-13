@@ -5,11 +5,10 @@
 #include "Storage.h"
 #include <utility>
 
-void Storage::updateMaps(orders_by_id_t &sortedById, orders_by_price_t &sortedByPrice, Command &cmd)
-{
+void Storage::updateMaps(orders_by_id_t &sortedById, orders_by_price_t &sortedByPrice, Command &cmd) {
     sortedById.insert(std::make_pair(cmd.order.id, &orders.back()));
 
-    std::vector<Order*> pOrders;
+    std::vector<Order *> pOrders;
     if (!sortedByPrice.empty()) {
         auto i = sortedByPrice.find(std::make_pair(cmd.order.price, cmd.order.data.symbol));
         if (i != sortedByPrice.end()) {
@@ -19,10 +18,10 @@ void Storage::updateMaps(orders_by_id_t &sortedById, orders_by_price_t &sortedBy
     pOrders.push_back(&orders.back());
     sortedByPrice.insert_or_assign(std::make_pair(cmd.order.price, cmd.order.data.symbol), std::move(pOrders));
 }
-bool Storage::insertOrder(Command &cmd)
-{
+
+bool Storage::insertOrder(Command &cmd) {
     if (!buysSortedById.empty() && buysSortedById.find(cmd.order.id) != buysSortedById.end() ||
-        !sellsSortedById.empty() && sellsSortedById.find(cmd.order.id) != sellsSortedById.end()){
+        !sellsSortedById.empty() && sellsSortedById.find(cmd.order.id) != sellsSortedById.end()) {
         std::cout << "already has order with given order id" << std::endl;
         return false;
     }
@@ -33,35 +32,31 @@ bool Storage::insertOrder(Command &cmd)
         else
             updateMaps(sellsSortedById, sellsSortedByPrice, cmd);
     }
-    catch (...)
-    {
+    catch (...) {
         std::cout << "error while insert new order" << std::endl;
         return false;
     }
     return true;
 }
 
-orders_by_price_t::const_reverse_iterator Storage::getBuysByPriceBegin()
-{
+orders_by_price_t::const_reverse_iterator Storage::getBuysByPriceBegin() {
     return buysSortedByPrice.crbegin();
 }
 
-orders_by_price_t::const_reverse_iterator Storage::getBuysByPriceEnd()
-{
+orders_by_price_t::const_reverse_iterator Storage::getBuysByPriceEnd() {
     return buysSortedByPrice.crend();
 }
 
-orders_by_price_t::const_iterator Storage::getSellsByPriceBegin()
-{
+orders_by_price_t::const_iterator Storage::getSellsByPriceBegin() {
     return sellsSortedByPrice.cbegin();
 }
 
-orders_by_price_t::const_iterator Storage::getSellsByPriceEnd()
-{
+orders_by_price_t::const_iterator Storage::getSellsByPriceEnd() {
     return sellsSortedByPrice.cend();
 }
 
-void Storage::getDataForPrint(const order_with_key_t& order, Order& data, size_t& dataVolume, const std::string& pattern) {
+void
+Storage::getDataForPrint(const order_with_key_t &order, Order &data, size_t &dataVolume, const std::string &pattern) {
     if (order.second.front()->data.symbol == pattern) {
         data.data.symbol = order.second.front()->data.symbol;
         data.price = order.first.first;
@@ -77,30 +72,86 @@ void Storage::getDataForPrint(const order_with_key_t& order, Order& data, size_t
     }
 }
 
-bool Storage::getDataForPrintFull(const order_with_key_t& order, Order& data, size_t& ordersLeft) {
-        if (ordersLeft < order.second.size()) {
-            data.data.symbol = order.second[ordersLeft]->data.symbol;
-            data.data.quantity = order.second[ordersLeft]->data.quantity;
-            data.price = order.second[ordersLeft]->price;
-            data.id = order.second[ordersLeft]->id;
-            return true;
-        }
+bool Storage::getDataForPrintFull(const order_with_key_t &order, Order &data, size_t &idInVector) {
+    if (idInVector < order.second.size()) {
+        data.data.symbol = order.second[idInVector]->data.symbol;
+        data.data.quantity = order.second[idInVector]->data.quantity;
+        data.price = order.second[idInVector]->price;
+        data.id = order.second[idInVector]->id;
+        return true;
+    }
     return false;
 }
 
-void Storage::getBboForPrint(std::string symbol, double& bid, double& ask)
-{ //TODO вынести
+void Storage::getBboForSubscribe(const std::string &symbol, double &bid, double &ask) {
     auto buyIter = buysSortedByPrice.crbegin();
     while (buyIter != buysSortedByPrice.crend()) {
-        if (buyIter->first.second == symbol)
+        if (buyIter->first.second == symbol) {
             bid = buyIter->second.front()->price;
+            break;
+        }
         buyIter = std::next(buyIter);
     }
 
     auto sellIter = sellsSortedByPrice.cbegin();
     while (sellIter != sellsSortedByPrice.cend()) {
-        if (sellIter->first.second == symbol)
+        if (sellIter->first.second == symbol) {
             ask = sellIter->second.front()->price;
+            break;
+        }
         sellIter = std::next(sellIter);
     }
+}
+
+void Storage::getVwapForSubscribe(const std::string &symbol, const uint64_t &quantity, double &bid, double &ask) {
+    auto getVwap{
+            [symbol, quantity](std::vector<std::pair<double, uint64_t>> &vwap, const order_with_key_t &order,
+                               uint64_t &tempQuantity) {
+                if (order.first.second == symbol) {
+                    if (order.second.front()->data.quantity < tempQuantity) {
+                        vwap.emplace_back(order.second.front()->price, order.second.front()->data.quantity);
+                        tempQuantity -= order.second.front()->data.quantity;
+                        return false;
+                    } else {
+                        vwap.emplace_back(order.second.front()->price, tempQuantity);
+                        return true;
+                    }
+                }
+                return false;
+            }
+    };
+
+    auto calcVwap{
+            [quantity](std::vector<std::pair<double, uint64_t>> &vwap,
+                       double &value) {
+                uint64_t tempQuantity = 0;
+                for (auto i : vwap) {
+                    value += i.first * i.second;
+                    tempQuantity += i.second;
+                }
+                value = (tempQuantity < quantity) ? NULL : value / tempQuantity;
+            }
+    };
+
+    std::vector<std::pair<double, uint64_t>> vwap;
+    uint64_t tempQuantity = quantity;
+    auto buyIter = buysSortedByPrice.crbegin();
+
+    while (buyIter != buysSortedByPrice.crend()) {
+        if (getVwap(vwap, order_with_key_t{buyIter->first, buyIter->second}, tempQuantity))
+            break;
+        buyIter = std::next(buyIter);
+    }
+    calcVwap(vwap, bid);
+
+    vwap.clear();
+    tempQuantity = quantity;
+    auto sellIter = sellsSortedByPrice.cbegin();
+
+    while (sellIter != sellsSortedByPrice.cend()) {
+        if (getVwap(vwap, order_with_key_t{sellIter->first, sellIter->second}, tempQuantity))
+            break;
+        sellIter = std::next(sellIter);
+    }
+    calcVwap(vwap, ask);
 }

@@ -95,7 +95,7 @@ namespace view {
 
                     std::string s;
                     std::getline(std::cin, s);
-                    switch (std::stoi(s)) {
+                    switch (std::stoi(s)) { //TODO exception
                         case 0:
                             return;
                         case 1: {

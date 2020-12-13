@@ -13,15 +13,25 @@ namespace view {
         Storage &storage = Storage::instance();
 
         auto bboIter = commands::getBboIterBegin();
-        double bid = 0;
-        double ask = 0;
-// чето вывожу в обратном порядке
         while (bboIter != commands::getBboIterEnd()) {
-            storage.getBboForPrint(*bboIter, bid, ask);
+            double bid = 0;
+            double ask = 0;
+            storage.getBboForSubscribe(*bboIter, bid, ask);
             std::cout << *bboIter;
             std::cout << " bid = " << ((bid == 0) ? "-" : std::to_string(bid));
-            std::cout << " ask = " << ((bid == 0) ? "-" : std::to_string(ask)) << std::endl;
+            std::cout << " ask = " << ((ask == 0) ? "-" : std::to_string(ask)) << std::endl;
             bboIter = std::next(bboIter);
+        }
+
+        auto vwapIter = commands::getVwapIterBegin();
+        while (vwapIter != commands::getVwapIterEnd()) {
+            double bid = 0;
+            double ask = 0;
+            storage.getVwapForSubscribe(vwapIter->first, vwapIter->second, bid, ask);
+            std::cout << vwapIter->first;
+            std::cout << " bid = " << ((bid == 0) ? "-" : std::to_string(bid));
+            std::cout << " ask = " << ((ask == 0) ? "-" : std::to_string(ask)) << std::endl;
+            vwapIter = std::next(vwapIter);
         }
     }
 }

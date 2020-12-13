@@ -53,8 +53,8 @@ namespace view {
 
         bool shouldPrint = false;
 
-        size_t buysLeftsInMap = 0;
-        size_t sellsLeftsInMap = 0;
+        size_t buysIdInVector = 0;
+        size_t sellsIdInVector = 0;
         while (true) {
 
             Order buyData = {};
@@ -62,11 +62,11 @@ namespace view {
             if (buysIter != storage.getBuysByPriceEnd()) {
                 if (buys.size() < MAX_PRINT_ON_SCREEN) {
                     if (storage.getDataForPrintFull(order_with_key_t{buysIter->first, buysIter->second}, buyData,
-                                                    buysLeftsInMap)) {
-                        buysLeftsInMap++;
+                                                    buysIdInVector)) {
+                        buysIdInVector++;
                         buys.push_back(buyData);
                     } else {
-                        buysLeftsInMap = 0;
+                        buysIdInVector = 0;
                         buysIter = std::next(buysIter);
                     }
                 }
@@ -77,11 +77,11 @@ namespace view {
             if (sellsIter != storage.getSellsByPriceEnd()) {
                 if (sells.size() < MAX_PRINT_ON_SCREEN) {
                     if (storage.getDataForPrintFull(order_with_key_t{sellsIter->first, sellsIter->second}, sellData,
-                                                    sellsLeftsInMap)) {
-                        sellsLeftsInMap++;
+                                                    sellsIdInVector)) {
+                        sellsIdInVector++;
                         sells.push_back(sellData);
                     } else {
-                        sellsLeftsInMap = 0;
+                        sellsIdInVector = 0;
                         sellsIter = std::next(sellsIter);
                     }
                 }

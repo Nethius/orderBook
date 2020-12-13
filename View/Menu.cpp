@@ -30,6 +30,8 @@ namespace view {
             std::cout << "'Print Full' to execute Print Full command " << std::endl;
             std::cout << "'Subscribe BBO 'symbol' to execute Subscribe BBO" << std::endl;
             std::cout << "'Unsubscribe BBO 'symbol' to execute Unsubscribe BBO" << std::endl;
+            std::cout << "'Subscribe VWAP 'symbol' 'quantity' to execute Subscribe BBO" << std::endl;
+            std::cout << "'Unsubscribe VWAP 'symbol' 'quantity' to execute Unsubscribe BBO" << std::endl;
             std::cout << "'Exit' to close application" << std::endl;
 
             std::string s;
@@ -37,34 +39,50 @@ namespace view {
             std::vector<std::string> args;
             getInputArgs(s, args);
 
-            if (args.empty())
+            if (args.empty()) //Nothing
                 std::cout << "Erroneous input" << std::endl;
-            else if (args.size() > 1 && args[0] == "Print" && args[1] == "Full")
+            else if (args.size() > 1 && args[0] == "Print" && args[1] == "Full") //Print Full
                 view::printFull();
-            else if (args.size() > 1 && args[0] == "Print") {
+            else if (args.size() > 1 && args[0] == "Print") { // Print
                 if (args.size() == 2)
                     view::print(args[1]);
                 else
                     std::cout << "Erroneous input" << std::endl;
             }
-            else if (args.size() > 1 && args[0] == "Subscribe" && args[1] == "BBO") {
+            else if (args.size() > 1 && args[0] == "Subscribe" && args[1] == "BBO") { //Subscribe BBO
                 if (args.size() == 3)
-                    commands::bboSubscribe(args[2]);
+                    if(!commands::bboSubscribe(args[2]))
+                        std::cout << "Already subscribed" << std::endl;
                 else
                     std::cout << "Erroneous input" << std::endl;
             }
-            else if (args.size() > 1 && args[0] == "Unsubscribe" && args[1] == "BBO") {
+            else if (args.size() > 1 && args[0] == "Unsubscribe" && args[1] == "BBO") { //Unsubscribe BBO
                 if (args.size() == 3)
-                    commands::bboUnsubscribe(args[2]);
+                    if(!commands::bboUnsubscribe(args[2]))
+                        std::cout << "Not subscribed" << std::endl;
                 else
                     std::cout << "Erroneous input" << std::endl;
             }
-            else if (args[0] == "Exit")
+            else if (args.size() > 1 && args[0] == "Subscribe" && args[1] == "VWAP") { //Subscribe VWAP
+                if (args.size() == 4)
+                    if(!commands::vwapSubscribe(args[2], std::stoull(args[3])))
+                        std::cout << "Already subscribed" << std::endl;
+                    else
+                        std::cout << "Erroneous input" << std::endl;
+            }
+            else if (args.size() > 1 && args[0] == "Unsubscribe" && args[1] == "VWAP") { //Unsubscribe VWAP
+                if (args.size() == 4)
+                    if(!commands::vwapUnsubscribe(args[2], std::stoull(args[3])))
+                        std::cout << "Not subscribed" << std::endl;
+                    else
+                        std::cout << "Erroneous input" << std::endl;
+            }
+            else if (args[0] == "Exit") //Exit
                 return;
-            else
+            else //Nothing
                 std::cout << "Erroneous input" << std::endl;
 
-            view::printSubscribes();
+            view::printSubscribes(); //Print all subscribed positions
         }
     }
 }

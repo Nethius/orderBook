@@ -41,13 +41,35 @@ namespace commands {
         return bboArray.cend();
     }
 
-    void vwapSubscribe(std::string symbol, std::string quantity)
+    bool vwapSubscribe(const std::string& symbol, uint64_t quantity)
     {
-
+        if (!vwapArray.empty())
+            for(const auto& vwap : vwapArray)
+                if (vwap.first == symbol && vwap.second == quantity)
+                    return false;
+        vwapArray.emplace_back(std::make_pair(symbol, quantity));
+        return true;
     }
 
-    void vwapUnsubscribe(std::string symbol, std::string quantity)
+    bool vwapUnsubscribe(const std::string& symbol, uint64_t quantity)
     {
+        if (vwapArray.empty())
+            return false;
 
+        for(auto it = vwapArray.cbegin(); it != vwapArray.cend(); it++)
+            if (it->first == symbol && it->second == quantity) {
+                vwapArray.erase(it);
+                return true;
+            }
+        return false;
+    }
+
+    std::vector<std::pair<std::string, uint64_t>>::const_iterator getVwapIterBegin()
+    {
+        return vwapArray.cbegin();
+    }
+    std::vector<std::pair<std::string, uint64_t>>::const_iterator getVwapIterEnd()
+    {
+        return vwapArray.cend();
     }
 }
