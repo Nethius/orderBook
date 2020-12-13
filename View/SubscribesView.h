@@ -4,9 +4,10 @@
 
 #ifndef ORDERBOOK_SUBSCRIBESVIEW_H
 #define ORDERBOOK_SUBSCRIBESVIEW_H
+#include <string>
 
 namespace view {
-    void printSubscribes();
+    void printSubscribes(std::string symbol = "");
 }
 
 #endif //ORDERBOOK_SUBSCRIBESVIEW_H

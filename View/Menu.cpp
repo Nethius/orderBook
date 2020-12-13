@@ -13,6 +13,7 @@
 #include <Subscribes.h>
 #include <ModifyOrder.h>
 #include <CommandsParser.h>
+#include <MdReplay.h>
 
 void getInputArgs(const std::string &str, std::vector<std::string> &args) {
     std::stringstream sstr(str);
@@ -52,6 +53,7 @@ namespace view {
                       << std::endl;
             std::cout << "'ORDER MODIFY','id','quantity','price' to execute Order Modify command" << std::endl;
             std::cout << "'ORDER CANCEL','id' to execute Order Cancel command" << std::endl;
+            std::cout << "'MD REPLAY','path to file','symbol' to execute commands from file" << std::endl;
             std::cout << "'EXIT' to close application" << std::endl;
 
             std::string s;
@@ -66,32 +68,36 @@ namespace view {
                 view::printFull(commandParser::parser(fillCmd(args[0], Order{0, 0, 0, "", OrderAction::BUY})));
             else if (args[0] == "PRINT" && args.size() == 2) { // Print
                 view::print(commandParser::parser(fillCmd(args[0], Order{0, 0, 0, args[1], OrderAction::BUY})));
-            } else if (args[0] == "SUBSCRIBE BBO") { //Subscribe BBO
+            } else if (args[0] == "SUBSCRIBE BBO" && args.size() == 2) { //Subscribe BBO
                 commands::bboSubscribe(
                         commandParser::parser(fillCmd(args[0], Order{0, 0, 0, args[1], OrderAction::BUY})));
-            } else if (args[0] == "UNSUBSCRIBE BBO") { //Unsubscribe BBO
+            } else if (args[0] == "UNSUBSCRIBE BBO" && args.size() == 2) { //Unsubscribe BBO
                 commands::bboUnsubscribe(
                         commandParser::parser(fillCmd(args[0], Order{0, 0, 0, args[1], OrderAction::BUY})));
-            } else if (args[0] == "SUBSCRIBE VWAP") { //Subscribe VWAP
+            } else if (args[0] == "SUBSCRIBE VWAP" && args.size() == 3) { //Subscribe VWAP
                 commands::vwapSubscribe(commandParser::parser(
                         fillCmd(args[0], Order{0, 0, std::stoull(args[2]), args[1], OrderAction::BUY})));
-            } else if (args[0] == "UNSUBSCRIBE VWAP") { //Unsubscribe VWAP
+            } else if (args[0] == "UNSUBSCRIBE VWAP" && args.size() == 3) { //Unsubscribe VWAP
                 commands::vwapUnsubscribe(commandParser::parser(
                         fillCmd(args[0], Order{0, 0, std::stoull(args[2]), args[1], OrderAction::BUY})));
-            } else if (args[0] == "ORDER ADD") { //Order Add
+            } else if (args[0] == "ORDER ADD" && args.size() == 6) { //Order Add
                 commands::orderAdd(commandParser::parser(
                         fillCmd(args[0], Order{std::stoull(args[1]), std::stod(args[5]), std::stoull(args[4]), args[2],
                                                static_cast<OrderAction>(std::stoi(
                                                        args[3]))})));
-            } else if (args[0] == "ORDER MODIFY") { //Order Modify
+            } else if (args[0] == "ORDER MODIFY" && args.size() == 4) { //Order Modify
                 commands::orderModify(commandParser::parser(fillCmd(args[0],
                                                                     Order{std::stoull(args[1]), std::stod(args[3]),
                                                                           std::stoull(args[2]), "",
                                                                           OrderAction::BUY})));
-            } else if (args[0] == "ORDER CANCEL") { //Order Cancel
+            } else if (args[0] == "ORDER CANCEL" && args.size() == 2) { //Order Cancel
                 commands::orderCancel(commandParser::parser(
                         fillCmd(args[0], Order{std::stoull(args[1]), 0, 0, "", OrderAction::BUY})));
-            } else if (args[0] == "EXIT") //Exit
+            } else if (args[0] == "MD REPLAY" && args.size() > 1) //MD REPLAY
+            {
+                commands::execCommandsFromFile(args[1], ((args.size() == 3) ? args[2] : ""));
+            }
+            else if (args[0] == "EXIT") //Exit
                 return;
             else //Nothing
                 std::cout << "Erroneous input" << std::endl;

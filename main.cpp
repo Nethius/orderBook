@@ -1,28 +1,13 @@
-#include <iostream>
-#include <CommandsParser.h>
-#include <iomanip>
-#include <fstream>
 #include <Menu.h>
-#include <ModifyOrder.h>
+#include <iostream>
 
 int main() {
-
-    std::cout << "Order list" << std::endl;
-
-
-    std::ifstream f(R"(C:\Users\Astan\Downloads\1.csv)");
-
-    std::string str;
-    std::vector<Command> commands;
-    while(std::getline(f, str))
-        commands.push_back(commandParser::parser(str));
-
-    for (auto command : commands)
-    {
-        commands::orderAdd(std::move(command));
+    try {
+        view::menu();
     }
-
-    view::menu();
-
+    catch (...) {
+        std::cout << "received unhandled exception" << std::endl;
+        return 0;
+    }
     return 0;
 }

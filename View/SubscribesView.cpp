@@ -8,29 +8,33 @@
 #include <iomanip>
 
 namespace view {
-    void printSubscribes()
+    void printSubscribes(std::string symbol)
     {
         Storage &storage = Storage::instance();
 
         auto bboIter = commands::getBboIterBegin();
         while (bboIter != commands::getBboIterEnd()) {
-            double bid = 0;
-            double ask = 0;
-            storage.getBboForSubscribe(*bboIter, bid, ask);
-            std::cout << *bboIter;
-            std::cout << " bid = " << ((bid == 0) ? "-" : std::to_string(bid));
-            std::cout << " ask = " << ((ask == 0) ? "-" : std::to_string(ask)) << std::endl;
+            if (symbol.empty() ? true : *bboIter == symbol) {
+                double bid = 0;
+                double ask = 0;
+                storage.getBboForSubscribe(*bboIter, bid, ask);
+                std::cout << *bboIter;
+                std::cout << " bid = " << ((bid == 0) ? "-" : std::to_string(bid));
+                std::cout << " ask = " << ((ask == 0) ? "-" : std::to_string(ask)) << std::endl;
+            }
             bboIter = std::next(bboIter);
         }
 
         auto vwapIter = commands::getVwapIterBegin();
         while (vwapIter != commands::getVwapIterEnd()) {
-            double bid = 0;
-            double ask = 0;
-            storage.getVwapForSubscribe(vwapIter->first, vwapIter->second, bid, ask);
-            std::cout << vwapIter->first;
-            std::cout << " bid = " << ((bid == 0) ? "-" : std::to_string(bid));
-            std::cout << " ask = " << ((ask == 0) ? "-" : std::to_string(ask)) << std::endl;
+            if (symbol.empty() ? true : vwapIter->first == symbol) {
+                double bid = 0;
+                double ask = 0;
+                storage.getVwapForSubscribe(vwapIter->first, vwapIter->second, bid, ask);
+                std::cout << vwapIter->first << " VWAP for given quantity (" << vwapIter->second << ")";
+                std::cout << "<" << ((bid == 0) ? "nil" : std::to_string(bid));
+                std::cout << ", " << ((ask == 0) ? "nil" : std::to_string(ask)) << ">" << std::endl;
+            }
             vwapIter = std::next(vwapIter);
         }
     }
