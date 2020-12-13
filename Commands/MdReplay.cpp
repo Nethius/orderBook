@@ -2,16 +2,16 @@
 // Created by Astan on 13.12.2020.
 //
 
-#include "MdReplay.h"
+#include <MdReplay.h>
 #include <fstream>
 #include <vector>
-#include <Storage.h>
-#include <SubscribesView.h>
+#include <Storage/Storage.h>
+#include <View/SubscribesView.h>
 #include <Subscribes.h>
 #include <ModifyOrder.h>
-#include <CommandsParser.h>
-#include <Print.h>
-#include <PrintFull.h>
+#include <Parser/CommandsParser.h>
+#include <View/Print.h>
+#include <View/PrintFull.h>
 
 namespace commands {
     void execCommandsFromFile(std::string path, std::string symbol)

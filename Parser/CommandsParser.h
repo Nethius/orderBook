@@ -6,7 +6,7 @@
 #define ORDERBOOK_COMMANDSPARSER_H
 #include <cstdint>
 #include <string>
-#include <Storage.h>
+#include <Storage/Storage.h>
 
 namespace commandParser {
     Command parser(const std::string& str);

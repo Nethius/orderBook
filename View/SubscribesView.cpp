@@ -3,8 +3,8 @@
 //
 
 #include "SubscribesView.h"
-#include <Storage.h>
-#include <Subscribes.h>
+#include <Storage/Storage.h>
+#include <Commands/Subscribes.h>
 #include <iomanip>
 
 namespace view {

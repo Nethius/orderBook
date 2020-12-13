@@ -5,15 +5,15 @@
 #include "Menu.h"
 #include <iostream>
 #include <string>
-#include <Print.h>
-#include <PrintFull.h>
+#include <View/Print.h>
+#include <View/PrintFull.h>
 #include "vector"
 #include "sstream"
-#include <SubscribesView.h>
-#include <Subscribes.h>
-#include <ModifyOrder.h>
-#include <CommandsParser.h>
-#include <MdReplay.h>
+#include <View/SubscribesView.h>
+#include <Commands/Subscribes.h>
+#include <Commands/ModifyOrder.h>
+#include <Parser/CommandsParser.h>
+#include <Commands/MdReplay.h>
 
 void getInputArgs(const std::string &str, std::vector<std::string> &args) {
     std::stringstream sstr(str);
