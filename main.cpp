@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <fstream>
 #include <Menu.h>
+#include <ModifyOrder.h>
 
 int main() {
 
@@ -16,10 +17,9 @@ int main() {
     while(std::getline(f, str))
         commands.push_back(parser(str));
 
-    Storage& storage = Storage::instance();
     for (auto command : commands)
     {
-        storage.insertOrder(command);
+        commands::orderAdd(command);
     }
 
     view::menu();

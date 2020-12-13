@@ -11,6 +11,7 @@
 #include "sstream"
 #include <SubscribesView.h>
 #include <Subscribes.h>
+#include <ModifyOrder.h>
 
 void getInputArgs(const std::string& str, std::vector<std::string>& args)
 {
@@ -28,10 +29,11 @@ namespace view {
             std::cout << "Enter: " << std::endl;
             std::cout << "'Print 'symbol'' to execute Print command " << std::endl;
             std::cout << "'Print Full' to execute Print Full command " << std::endl;
-            std::cout << "'Subscribe BBO 'symbol' to execute Subscribe BBO" << std::endl;
-            std::cout << "'Unsubscribe BBO 'symbol' to execute Unsubscribe BBO" << std::endl;
-            std::cout << "'Subscribe VWAP 'symbol' 'quantity' to execute Subscribe BBO" << std::endl;
-            std::cout << "'Unsubscribe VWAP 'symbol' 'quantity' to execute Unsubscribe BBO" << std::endl;
+            std::cout << "'Subscribe BBO 'symbol' to execute Subscribe BBO command" << std::endl;
+            std::cout << "'Unsubscribe BBO 'symbol' to execute Unsubscribe BBO command" << std::endl;
+            std::cout << "'Subscribe VWAP 'symbol' 'quantity' to execute Subscribe BBO command" << std::endl;
+            std::cout << "'Unsubscribe VWAP 'symbol' 'quantity' to execute Unsubscribe BBO command" << std::endl;
+            std::cout << "'Order Modify 'id' 'quantity' 'price' to execute Order Modify command" << std::endl;
             std::cout << "'Exit' to close application" << std::endl;
 
             std::string s;
@@ -75,6 +77,12 @@ namespace view {
                     if(!commands::vwapUnsubscribe(args[2], std::stoull(args[3])))
                         std::cout << "Not subscribed" << std::endl;
                     else
+                        std::cout << "Erroneous input" << std::endl;
+            }
+            else if (args.size() > 1 && args[0] == "Order" && args[1] == "Modify") { //Unsubscribe VWAP
+                if (args.size() == 5)
+                    if(!commands::orderModify(Command{"ORDER MODIFY", std::stoull(args[2]), std::stod(args[3]), std::stoull(args[4]), "",
+                                                      OrderAction::BUY}))
                         std::cout << "Erroneous input" << std::endl;
             }
             else if (args[0] == "Exit") //Exit

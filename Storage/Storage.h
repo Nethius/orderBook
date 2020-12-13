@@ -60,7 +60,7 @@ class Storage {
 
     void
     updateMaps(orders_by_id_t &sortedById, orders_by_price_t &sortedByPrice,
-               Command &cmd);
+               Order &order);
 
     Storage() {};
     ~Storage() {};
@@ -82,7 +82,10 @@ public:
 
     void getDataForPrint(const order_with_key_t& order, Order& data, size_t& dataVolume, const std::string& pattern);
     bool getDataForPrintFull(const order_with_key_t& order, Order& data, size_t& idInVector);
-    bool insertOrder(Command &cmd);
+    bool insertOrder(Order &order);
+    bool modifyOrder(Order &order);
+//    bool cancelOrder(uint64_t orderId);
+
     void getBboForSubscribe(const std::string& symbol, double& bid, double& ask);
     void getVwapForSubscribe(const std::string &symbol, const uint64_t& quantity, double &bid, double &ask);
 };

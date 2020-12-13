@@ -5,37 +5,58 @@
 #include "Storage.h"
 #include <utility>
 
-void Storage::updateMaps(orders_by_id_t &sortedById, orders_by_price_t &sortedByPrice, Command &cmd) {
-    sortedById.insert(std::make_pair(cmd.order.id, &orders.back()));
+void Storage::updateMaps(orders_by_id_t &sortedById, orders_by_price_t &sortedByPrice, Order &order) {
+    sortedById.insert(std::make_pair(order.id, &orders.back()));
 
     std::vector<Order *> pOrders;
     if (!sortedByPrice.empty()) {
-        auto i = sortedByPrice.find(std::make_pair(cmd.order.price, cmd.order.data.symbol));
+        auto i = sortedByPrice.find(std::make_pair(order.price, order.data.symbol));
         if (i != sortedByPrice.end()) {
             pOrders = i->second;
         }
     }
     pOrders.push_back(&orders.back());
-    sortedByPrice.insert_or_assign(std::make_pair(cmd.order.price, cmd.order.data.symbol), std::move(pOrders));
+    sortedByPrice.insert_or_assign(std::make_pair(order.price, order.data.symbol), std::move(pOrders));
 }
 
-bool Storage::insertOrder(Command &cmd) {
-    if (!buysSortedById.empty() && buysSortedById.find(cmd.order.id) != buysSortedById.end() ||
-        !sellsSortedById.empty() && sellsSortedById.find(cmd.order.id) != sellsSortedById.end()) {
+bool Storage::insertOrder(Order &order) {
+    if (!buysSortedById.empty() && buysSortedById.find(order.id) != buysSortedById.end() ||
+        !sellsSortedById.empty() && sellsSortedById.find(order.id) != sellsSortedById.end()) {
         std::cout << "already has order with given order id" << std::endl;
         return false;
     }
     try {
-        orders.push_back(cmd.order);
-        if (cmd.order.side == OrderAction::BUY)
-            updateMaps(buysSortedById, buysSortedByPrice, cmd);
+        orders.push_back(order);
+        if (order.side == OrderAction::BUY)
+            updateMaps(buysSortedById, buysSortedByPrice, order);
         else
-            updateMaps(sellsSortedById, sellsSortedByPrice, cmd);
+            updateMaps(sellsSortedById, sellsSortedByPrice, order);
     }
     catch (...) {
         std::cout << "error while insert new order" << std::endl;
         return false;
     }
+    return true;
+}
+
+bool Storage::modifyOrder(Order &order)
+{
+    auto modify{
+            [&order](orders_by_id_t &ordersById,
+                     orders_by_price_t &ordersByPrice) {
+                auto itById = ordersById.find(order.id);
+                if (itById == ordersById.cend())
+                    return false;
+                auto mapNode = ordersByPrice.extract(std::make_pair(itById->second->price, itById->second->data.symbol));
+                mapNode.key() = std::make_pair(order.price, itById->second->data.symbol);
+                ordersByPrice.insert(std::move(mapNode));
+                itById->second->data.quantity = order.data.quantity;
+                itById->second->price = order.price;
+                return true;
+            }
+    };
+    if (!modify(buysSortedById, buysSortedByPrice) && !modify(sellsSortedById, sellsSortedByPrice))
+        return false;
     return true;
 }
 
