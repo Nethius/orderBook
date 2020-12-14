@@ -5,7 +5,7 @@
 #include "Print.h"
 #include <iomanip>
 #include <algorithm>
-
+#include <map>
 namespace {
     struct PrintData {
         size_t count = 0;
@@ -49,7 +49,8 @@ namespace view {
         }
 
         Storage &storage = Storage::instance();
-
+        std::map<int, int> asd;
+        asd.insert_or_assign(10,10);
         std::vector<PrintData> buys;
         std::vector<PrintData> sells;
         auto buysIter = storage.getBuysByPriceBegin();
