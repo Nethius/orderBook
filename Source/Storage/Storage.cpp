@@ -3,7 +3,6 @@
 //
 
 #include "Storage.h"
-#include <utility>
 
 void Storage::updateMapById(orders_by_price_t &ordersByPrice, Order &order) {
     std::vector<Order *> pOrders;
@@ -15,11 +14,11 @@ void Storage::updateMapById(orders_by_price_t &ordersByPrice, Order &order) {
     }
     pOrders.push_back(&orders.back());
     ordersByPrice.insert_or_assign(std::make_pair(order.price, order.data.symbol), std::move(pOrders));
-};
+}
 
 bool Storage::insertOrder(Order &order) {
-    if (!buysSortedById.empty() && buysSortedById.find(order.id) != buysSortedById.end() ||
-        !sellsSortedById.empty() && sellsSortedById.find(order.id) != sellsSortedById.end()) {
+    if ((!buysSortedById.empty() && buysSortedById.find(order.id) != buysSortedById.end()) ||
+            (!sellsSortedById.empty() && sellsSortedById.find(order.id) != sellsSortedById.end())) {
         std::cout << "already has order with given order id" << std::endl;
         return false;
     }
