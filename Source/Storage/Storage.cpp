@@ -4,7 +4,7 @@
 
 #include "Storage.h"
 
-void Storage::updateMapById(orders_by_price_t &ordersByPrice, Order &order) {
+void Storage::updateMapById(std::map<std::pair<double, std::string>, std::vector<Order *>, comparator> &ordersByPrice, Order &order) {
     std::vector<Order *> pOrders;
     if (!ordersByPrice.empty()) {
         auto i = ordersByPrice.find(std::make_pair(order.price, order.data.symbol));
@@ -42,7 +42,7 @@ bool Storage::insertOrder(Order &order) {
 bool Storage::modifyOrder(Order &order) {
     auto modify{
             [&order, this](orders_by_id_t &ordersById,
-                           orders_by_price_t &ordersByPrice) {
+                           std::map<std::pair<double, std::string>, std::vector<Order *>, comparator> &ordersByPrice) {
                 auto orderId = order.id;
                 auto itById = ordersById.find(orderId);
                 if (itById == ordersById.cend())

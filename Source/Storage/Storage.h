@@ -54,10 +54,10 @@ class Storage {
     std::list<Order> orders;
 
     orders_by_id_t buysSortedById;
-    std::map<std::pair<double, std::string>, std::vector<Order *>, comparator> buysSortedByPrice;
+    orders_by_price_t buysSortedByPrice;
 
     orders_by_id_t sellsSortedById;
-    std::map<std::pair<double, std::string>, std::vector<Order *>, comparator> sellsSortedByPrice;
+    orders_by_price_t sellsSortedByPrice;
 
     void updateMapById(orders_by_price_t &ordersByPrice, Order& order);
 
