@@ -7,10 +7,11 @@ APP_DIR  := $(BUILD)/apps
 TARGET   := orderBook
 INCLUDE  := -ISource/
 SRC      :=                      		\
-   $(wildcard Source/Storage/*.cpp) 	\
-   $(wildcard Source/View/*.cpp) 		\
-   $(wildcard Source/Commands/*.cpp)	\
-   $(wildcard Source/Parser/*.cpp)		\
+	$(wildcard *.cpp)					\
+	$(wildcard Source/Storage/*.cpp) 	\
+	$(wildcard Source/View/*.cpp) 		\
+	$(wildcard Source/Commands/*.cpp)	\
+	$(wildcard Source/Parser/*.cpp)		\
 
 OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 DEPENDENCIES \
