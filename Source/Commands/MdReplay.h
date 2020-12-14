@@ -4,7 +4,9 @@
 
 #ifndef ORDERBOOK_MDREPLAY_H
 #define ORDERBOOK_MDREPLAY_H
+
 #include <string>
+
 namespace commands {
     void execCommandsFromFile(std::string path, std::string symbol = "");
 }

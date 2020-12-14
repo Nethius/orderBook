@@ -7,8 +7,7 @@
 #include "sstream"
 
 namespace commandParser {
-    Command parser(const std::string& str)
-    {
+    Command parser(const std::string &str) {
         Command cmd;
         std::vector<std::string> elems;
         std::stringstream sstr(str);

@@ -22,7 +22,8 @@ namespace {
             std::cout << std::setw(PADDING) << std::left
                       << ((i < sells.size()) ? std::to_string(sells[i].data.quantity) : "");
             std::cout << std::setw(PADDING) << std::left << ((i < sells.size()) ? sells[i].data.symbol : "");
-            std::cout << std::setw(PADDING) << std::left << ((i < sells.size()) ? std::to_string(sells[i].id) : "") << std::endl;
+            std::cout << std::setw(PADDING) << std::left << ((i < sells.size()) ? std::to_string(sells[i].id) : "")
+                      << std::endl;
         }
     }
 
@@ -40,7 +41,7 @@ namespace {
 }
 
 namespace view {
-    bool printFull(Command&& cmd) {
+    bool printFull(Command &&cmd) {
         if (cmd.commandName != "PRINT FULL") {
             std::cout << "Wrong command signature: " << cmd.commandName << std::endl;
             return false;
@@ -89,8 +90,9 @@ namespace view {
                 }
             }
 
-            shouldPrint = (buys.size() == MAX_PRINT_ON_SCREEN && sells.size() == MAX_PRINT_ON_SCREEN) || (buysIter == storage.getBuysByPriceEnd() &&
-                                                                                                        sellsIter == storage.getSellsByPriceEnd());
+            shouldPrint = (buys.size() == MAX_PRINT_ON_SCREEN && sells.size() == MAX_PRINT_ON_SCREEN) ||
+                          (buysIter == storage.getBuysByPriceEnd() &&
+                           sellsIter == storage.getSellsByPriceEnd());
 
             if (shouldPrint) {
                 formatPrint(buys, sells);

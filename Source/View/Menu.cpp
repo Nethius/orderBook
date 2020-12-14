@@ -83,8 +83,7 @@ namespace view {
             } else if (args[0] == "ORDER ADD" && args.size() == 6) { //Order Add
                 commands::orderAdd(commandParser::parser(
                         fillCmd(args[0], Order{std::stoull(args[1]), std::stod(args[5]), std::stoull(args[4]), args[2],
-                                               static_cast<OrderAction>(std::stoi(
-                                                       args[3]))})));
+                                               (args[3] == "Buy") ? OrderAction::BUY : OrderAction::SELL})));
             } else if (args[0] == "ORDER MODIFY" && args.size() == 4) { //Order Modify
                 commands::orderModify(commandParser::parser(fillCmd(args[0],
                                                                     Order{std::stoull(args[1]), std::stod(args[3]),
@@ -96,8 +95,7 @@ namespace view {
             } else if (args[0] == "MD REPLAY" && args.size() > 1) //MD REPLAY
             {
                 commands::execCommandsFromFile(args[1], ((args.size() == 3) ? args[2] : ""));
-            }
-            else if (args[0] == "EXIT") //Exit
+            } else if (args[0] == "EXIT") //Exit
                 return;
             else //Nothing
                 std::cout << "Erroneous input" << std::endl;

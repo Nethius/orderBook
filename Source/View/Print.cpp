@@ -42,7 +42,7 @@ namespace {
     }
 }
 namespace view {
-    void print(Command&& cmd) {
+    void print(Command &&cmd) {
         if (cmd.commandName != "PRINT") {
             std::cout << "Wrong command signature: " << cmd.commandName << std::endl;
             return;

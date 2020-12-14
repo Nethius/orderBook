@@ -8,8 +8,7 @@
 #include <iomanip>
 
 namespace view {
-    void printSubscribes(std::string symbol)
-    {
+    void printSubscribes(std::string symbol) {
         Storage &storage = Storage::instance();
 
         auto bboIter = commands::getBboIterBegin();

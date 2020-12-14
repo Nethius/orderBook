@@ -4,6 +4,7 @@
 
 #ifndef ORDERBOOK_SUBSCRIBESVIEW_H
 #define ORDERBOOK_SUBSCRIBESVIEW_H
+
 #include <string>
 
 namespace view {

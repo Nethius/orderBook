@@ -18,7 +18,7 @@ void Storage::updateMapById(orders_by_price_t &ordersByPrice, Order &order) {
 
 bool Storage::insertOrder(Order &order) {
     if ((!buysSortedById.empty() && buysSortedById.find(order.id) != buysSortedById.end()) ||
-            (!sellsSortedById.empty() && sellsSortedById.find(order.id) != sellsSortedById.end())) {
+        (!sellsSortedById.empty() && sellsSortedById.find(order.id) != sellsSortedById.end())) {
         std::cout << "already has order with given order id" << std::endl;
         return false;
     }
@@ -51,8 +51,8 @@ bool Storage::modifyOrder(Order &order) {
                         std::make_pair(itById->second->price, itById->second->data.symbol));
 
                 auto pOrderIt = std::find_if(itByPrice->second.begin(),
-                                       itByPrice->second.end(),
-                                       [orderId](const Order* order) { return order->id == orderId; });
+                                             itByPrice->second.end(),
+                                             [orderId](const Order *order) { return order->id == orderId; });
 
                 itById->second->data.quantity = order.data.quantity;
                 itById->second->price = order.price;
@@ -60,8 +60,7 @@ bool Storage::modifyOrder(Order &order) {
                 if (itByPrice->second.size() > 1) {
                     itByPrice->second.erase(pOrderIt);
                     updateMapById(ordersByPrice, *(itById->second));
-                }
-                else {
+                } else {
                     auto mapNode = ordersByPrice.extract(itByPrice);
                     mapNode.key() = std::make_pair(order.price, itById->second->data.symbol);
                     ordersByPrice.insert(std::move(mapNode));
@@ -85,8 +84,8 @@ bool Storage::cancelOrder(uint64_t orderId) {
                 auto itByPrice = ordersByPrice.find(
                         std::make_pair(itById->second->price, itById->second->data.symbol));
                 auto pOrderIt = std::find_if(itByPrice->second.begin(),
-                                       itByPrice->second.end(),
-                                       [orderId](const Order* order) { return order->id == orderId; });
+                                             itByPrice->second.end(),
+                                             [orderId](const Order *order) { return order->id == orderId; });
                 if (itByPrice->second.size() > 1)
                     itByPrice->second.erase(pOrderIt);
                 else
@@ -95,8 +94,8 @@ bool Storage::cancelOrder(uint64_t orderId) {
 
                 ordersById.erase(itById);
                 auto orderIt = std::find_if(orders.begin(),
-                                       orders.end(),
-                                       [orderId](const Order &order) { return order.id == orderId; });
+                                            orders.end(),
+                                            [orderId](const Order &order) { return order.id == orderId; });
                 orders.erase(orderIt);
                 return true;
             }

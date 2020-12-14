@@ -5,6 +5,7 @@
 #ifndef ORDERBOOK_STORAGE_H
 #define ORDERBOOK_STORAGE_H
 #define EPSILON 0.00001
+
 #include <string>
 #include <vector>
 #include <map>
@@ -30,8 +31,7 @@ struct Order {
     OrderAction side;
 };
 
-struct Command
-{
+struct Command {
     std::string commandName;
     Order order;
 };
@@ -59,34 +59,44 @@ class Storage {
     orders_by_id_t sellsSortedById;
     orders_by_price_t sellsSortedByPrice;
 
-    void updateMapById(orders_by_price_t &ordersByPrice, Order& order);
+    void updateMapById(orders_by_price_t &ordersByPrice, Order &order);
 
     Storage() {};
+
     ~Storage() {};
-    Storage(Storage const&) = delete;
-    Storage& operator= (Storage const&) = delete;
+
+    Storage(Storage const &) = delete;
+
+    Storage &operator=(Storage const &) = delete;
+
 public:
 
     orders_by_price_t::const_reverse_iterator getBuysByPriceBegin();
+
     orders_by_price_t::const_reverse_iterator getBuysByPriceEnd();
 
     orders_by_price_t::const_iterator getSellsByPriceBegin();
+
     orders_by_price_t::const_iterator getSellsByPriceEnd();
 
-    static Storage& instance()
-    {
+    static Storage &instance() {
         static Storage storage;
         return storage;
     };
 
-    bool getDataForPrint(const order_with_key_t& order, Order& data, size_t& dataVolume, const std::string& pattern);
-    bool getDataForPrintFull(const order_with_key_t& order, Order& data, size_t& idInVector);
+    bool getDataForPrint(const order_with_key_t &order, Order &data, size_t &dataVolume, const std::string &pattern);
+
+    bool getDataForPrintFull(const order_with_key_t &order, Order &data, size_t &idInVector);
+
     bool insertOrder(Order &order);
+
     bool modifyOrder(Order &order);
+
     bool cancelOrder(uint64_t orderId);
 
-    void getBboForSubscribe(const std::string& symbol, double& bid, double& ask);
-    void getVwapForSubscribe(const std::string &symbol, const uint64_t& quantity, double &bid, double &ask);
+    void getBboForSubscribe(const std::string &symbol, double &bid, double &ask);
+
+    void getVwapForSubscribe(const std::string &symbol, const uint64_t &quantity, double &bid, double &ask);
 };
 
 #endif //ORDERBOOK_STORAGE_H

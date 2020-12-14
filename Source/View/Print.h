@@ -9,6 +9,6 @@
 #include <Storage/Storage.h>
 
 namespace view {
-    void print(Command&& cmd);
+    void print(Command &&cmd);
 }
 #endif //ORDERBOOK_PRINT_H

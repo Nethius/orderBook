@@ -14,8 +14,7 @@
 #include <View/PrintFull.h>
 
 namespace commands {
-    void execCommandsFromFile(std::string path, std::string symbol)
-    {
+    void execCommandsFromFile(std::string path, std::string symbol) {
         std::ifstream f(path);
         if (!f.good()) {
             std::cout << "file does not exist" << std::endl;
@@ -23,16 +22,17 @@ namespace commands {
         }
         std::string str;
         std::vector<Command> commands;
-        while(std::getline(f, str))
+        while (std::getline(f, str))
             commands.push_back(commandParser::parser(str));
 
-        for (auto command : commands)
-        {
+        for (auto command : commands) {
             if (command.commandName.empty()) //Nothing
                 std::cout << "Erroneous input" << std::endl;
-            else if (command.commandName == "PRINT FULL" && (symbol.empty() ? true : command.order.data.symbol == symbol)) //Print Full
+            else if (command.commandName == "PRINT FULL" &&
+                     (symbol.empty() ? true : command.order.data.symbol == symbol)) //Print Full
                 view::printFull(std::move(command));
-            else if (command.commandName == "PRINT" && (symbol.empty() ? true : command.order.data.symbol == symbol)) { // Print
+            else if (command.commandName == "PRINT" &&
+                     (symbol.empty() ? true : command.order.data.symbol == symbol)) { // Print
                 view::print(std::move(command));
             } else if (command.commandName == "SUBSCRIBE BBO") { //Subscribe BBO
                 commands::bboSubscribe(std::move(command));
