@@ -2,5 +2,5 @@ cmake_minimum_required(VERSION 3.16)
 project(orderBook)
 
 set(CMAKE_CXX_STANDARD 17)
-include_directories(Commands Parser Storage View)
-add_executable(orderBook main.cpp Parser/CommandsParser.cpp Parser/CommandsParser.h Storage/Storage.cpp Storage/Storage.h View/Print.cpp View/Print.h View/PrintFull.cpp View/PrintFull.h View/Menu.cpp View/Menu.h Commands/Subscribes.cpp Commands/Subscribes.h View/SubscribesView.cpp View/SubscribesView.h Commands/ModifyOrder.cpp Commands/ModifyOrder.h Commands/MdReplay.cpp Commands/MdReplay.h)
+include_directories(Source)
+add_executable(orderBook main.cpp Source/Parser/CommandsParser.cpp Source/Parser/CommandsParser.h Source/Storage/Storage.cpp Source/Storage/Storage.h Source/View/Print.cpp Source/View/Print.h Source/View/PrintFull.cpp Source/View/PrintFull.h Source/View/Menu.cpp Source/View/Menu.h Source/Commands/Subscribes.cpp Source/Commands/Subscribes.h Source/View/SubscribesView.cpp Source/View/SubscribesView.h Source/Commands/ModifyOrder.cpp Source/Commands/ModifyOrder.h Source/Commands/MdReplay.cpp Source/Commands/MdReplay.h)

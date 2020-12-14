@@ -4,12 +4,6 @@
 
 #include "Storage.h"
 #include <utility>
-#include "string"
-#include "vector"
-#include "map"
-#include "list"
-#include <iostream>
-#include <algorithm>
 
 void Storage::updateMapById(orders_by_price_t &ordersByPrice, Order &order) {
     std::vector<Order *> pOrders;
@@ -207,7 +201,7 @@ void Storage::getVwapForSubscribe(const std::string &symbol, const uint64_t &qua
                     value += i.first * i.second;
                     tempQuantity += i.second;
                 }
-                value = (tempQuantity < quantity) ? NULL : value / tempQuantity;
+                value = (tempQuantity < quantity) ? 0 : value / tempQuantity;
             }
     };
 

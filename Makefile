@@ -1,16 +1,52 @@
-CC=g++
-CFLAGS=-c -std=c++17 -Wall -pedantic
-SOURCES=Storage/Storage.cpp Parser/CommandsParser.cpp Commands/ModifyOrder.cpp Commands/MdReplay.cpp Commands/Subscribes.cpp View/Print.cpp View/PrintFull.cpp View/SubscribesView.cpp View/Menu.cpp
-OBJECTS=$(SOURCES:.cpp=.o)
-EXECUTABLE=orderBook
-HEADERS=Storage/Storage.h Parser/CommandsParser.h Commands/ModifyOrder.h Commands/MdReplay.h Commands/Subscribes.h View/Print.h View/PrintFull.h View/SubscribesView.h View/Menu.h
-all: $(SOURCES) $(EXECUTABLE)
-	
-$(EXECUTABLE): $(OBJECTS) 
-	$(CC) $(OBJECTS) -o $@
+CXX      := -c++
+CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror
+LDFLAGS  := -L/usr/lib -lstdc++ -lm
+BUILD    := ./build
+OBJ_DIR  := $(BUILD)/objects
+APP_DIR  := $(BUILD)/apps
+TARGET   := orderBook
+INCLUDE  := -ISource/
+SRC      :=                      		\
+   $(wildcard Source/Storage/*.cpp) 	\
+   $(wildcard Source/View/*.cpp) 		\
+   $(wildcard Source/Commands/*.cpp)	\
+   $(wildcard Source/Parser/*.cpp)		\
 
-.cpp.o:
-	$(CC) $< -o $@
+OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
+DEPENDENCIES \
+         := $(OBJECTS:.o=.d)
+
+all: build $(APP_DIR)/$(TARGET)
+
+$(OBJ_DIR)/%.o: %.cpp
+   @mkdir -p $(@D)
+   $(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -MMD -o $@
+
+$(APP_DIR)/$(TARGET): $(OBJECTS)
+   @mkdir -p $(@D)
+   $(CXX) $(CXXFLAGS) -o $(APP_DIR)/$(TARGET) $^ $(LDFLAGS)
+
+-include $(DEPENDENCIES)
+
+.PHONY: all build clean debug release info
+
+build:
+   @mkdir -p $(APP_DIR)
+   @mkdir -p $(OBJ_DIR)
+
+debug: CXXFLAGS += -DDEBUG -g
+debug: all
+
+release: CXXFLAGS += -O2
+release: all
 
 clean:
-	rm -rf *.o orderBook
+   -@rm -rvf $(OBJ_DIR)/*
+   -@rm -rvf $(APP_DIR)/*
+
+info:
+   @echo "[*] Application dir: ${APP_DIR}     "
+   @echo "[*] Object dir:      ${OBJ_DIR}     "
+   @echo "[*] Sources:         ${SRC}         "
+   @echo "[*] Objects:         ${OBJECTS}     "
+   @echo "[*] Dependencies:    ${DEPENDENCIES}"

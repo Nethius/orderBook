@@ -5,10 +5,10 @@
 #ifndef ORDERBOOK_STORAGE_H
 #define ORDERBOOK_STORAGE_H
 #define EPSILON 0.00001
-#include "string"
-#include "vector"
-#include "map"
-#include "list"
+#include <string>
+#include <vector>
+#include <map>
+#include <list>
 #include <iostream>
 #include <algorithm>
 
@@ -35,19 +35,19 @@ struct Command
     Order order;
 };
 
-namespace {
-    struct comparator {
-        bool operator()(const std::pair<double, std::string> &l, const std::pair<double, std::string> &r) const {
-            if (std::abs(l.first - r.first) <= EPSILON * std::max(1.0, std::max(std::abs(l.first), std::abs(r.first))))
-                return l.second > r.second;
-            return l.first < r.first;
-        }
-    };
 
-    typedef std::map<uint64_t, Order *> orders_by_id_t;
-    typedef std::pair<std::pair<double, std::string>, std::vector<Order *>> order_with_key_t;
-    typedef std::map<std::pair<double, std::string>, std::vector<Order *>, comparator> orders_by_price_t;
-}
+struct comparator {
+    bool operator()(const std::pair<double, std::string> &l, const std::pair<double, std::string> &r) const {
+        if (std::abs(l.first - r.first) <= EPSILON * std::max(1.0, std::max(std::abs(l.first), std::abs(r.first))))
+            return l.second > r.second;
+        return l.first < r.first;
+    }
+};
+
+typedef std::map<uint64_t, Order *> orders_by_id_t;
+typedef std::pair<std::pair<double, std::string>, std::vector<Order *>> order_with_key_t;
+typedef std::map<std::pair<double, std::string>, std::vector<Order *>, comparator> orders_by_price_t;
+
 
 class Storage {
     std::list<Order> orders;
